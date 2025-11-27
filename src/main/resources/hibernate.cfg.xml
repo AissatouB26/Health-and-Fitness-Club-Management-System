@@ -1,0 +1,27 @@
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+
+        <!-- Database connection settings -->
+        <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+        <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/'Fitness Management System'</property>
+        <property name="hibernate.connection.username">postgres</property>
+        <property name="hibernate.connection.password">database</property>
+
+        <!-- SQL dialect for PostgreSQL -->
+        <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+
+        <!-- Show SQL statements in console -->
+        <property name="hibernate.show_sql">true</property>
+
+        <!-- Automatically update DB schema (good for development) -->
+        <property name="hibernate.hbm2ddl.auto">update</property>
+
+        <!-- Map your entity classes -->
+        <mapping class="models.Member"/>
+        <mapping class="models.Class"/>
+
+    </session-factory>
+</hibernate-configuration>
