@@ -25,7 +25,7 @@ public class FitnessClass {
 
     @ManyToMany
     @JoinTable(
-        name = "class_id",
+        name = "member_course",
         joinColumns = @JoinColumn(name = "class_id"),
         inverseJoinColumns = @JoinColumn(name = "member_id")
     )

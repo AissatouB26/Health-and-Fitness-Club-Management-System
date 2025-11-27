@@ -26,6 +26,6 @@ public class Member {
         joinColumns = @JoinColumn(name = "member_id"),
         inverseJoinColumns = @JoinColumn(name = "class_id")
     )
-    private List<Class> classes = new ArrayList<>();
+    private List<FitnessClass> classes = new ArrayList<>();
 
 }
