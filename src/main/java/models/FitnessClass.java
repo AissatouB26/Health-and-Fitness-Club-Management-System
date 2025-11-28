@@ -1,3 +1,5 @@
+package models;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,9 +10,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-
-import java.time.LocalDateTime;
 
 
 @Entity
@@ -23,6 +24,7 @@ public class FitnessClass {
     private int capacity;
     private LocalDateTime startTime, endTime;
 
+    //Connecting with Member
     @ManyToMany
     @JoinTable(
         name = "member_course",
@@ -30,5 +32,14 @@ public class FitnessClass {
         inverseJoinColumns = @JoinColumn(name = "member_id")
     )
     private List<Member> members = new ArrayList<>();
+
+    //Connecting with Trainer
+    @ManyToOne
+    @JoinColumn(name = "trainer_id")
+    private Trainer trainer;
+
+
+    //Constructor
+    public FitnessClass() {}
 
 }
