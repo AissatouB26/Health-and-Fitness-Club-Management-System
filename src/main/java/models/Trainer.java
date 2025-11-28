@@ -23,4 +23,3 @@ public class Trainer {
     private List<FitnessClass> classes = new ArrayList<>();
 
 }
-
