@@ -37,4 +37,16 @@ public class Trainer {
 
     public void setName(String name) {this.name = name;}
     public void setEmail(String email) {this.email = email;}
+
+    // Check if trainer is available for that class
+    public boolean isAvailable(FitnessClass newClass) {
+        for (FitnessClass existingClass : classes) {
+            // Check for time overlap
+            if (newClass.getStartTime().isBefore(existingClass.getEndTime()) &&
+                existingClass.getStartTime().isBefore(newClass.getEndTime())) {
+                return false; 
+            }
+        }
+        return true; 
+    }
 }

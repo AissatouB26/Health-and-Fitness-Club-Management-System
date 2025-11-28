@@ -12,7 +12,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "members")
+@Table(name = "member")
 
 public class Member {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

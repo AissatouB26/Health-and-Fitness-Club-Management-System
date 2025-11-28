@@ -3,6 +3,9 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
+import models.Member;
+import models.Trainer;
+
 
 public class Main {
     public static void main(String[] args) {
@@ -14,8 +17,10 @@ public class Main {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
 
-            //Member member = new Member("Alice", "alice@example.com");
-            //session.save(member);
+            Member harsimran = new Member("Harsimran", 19, 130, "harsimran@example.com");
+            Member maria = new Member("Maria", 20, 130, "maria@example.com");
+            Trainer nat = new Trainer("Nat", "nat@example.com");
+            //session.save();
 
             session.getTransaction().commit();
             System.out.println("Member saved!");
