@@ -51,4 +51,23 @@ public class FitnessClass {
     //Constructor
     public FitnessClass() {}
 
+    public FitnessClass(String name, int capacity, LocalDateTime startTime, LocalDateTime endTime) {
+        this.name = name;
+        this.capacity = capacity;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
+    //Getters and Setters
+    public int getId() {return id;}
+    public String getName() {return name;}
+    public int getCapacity() {return capacity;}
+    public LocalDateTime getStartTime() {return startTime;}
+    public LocalDateTime getEndTime() {return endTime;}
+
+    public void setName(String name) {this.name = name;}
+    public void setCapacity(int capacity) {this.capacity = capacity;}
+    public void setStartTime(LocalDateTime startTime) {this.startTime = startTime;}
+    public void setEndTime(LocalDateTime endTime) {this.endTime = endTime;}
+
 }

@@ -16,6 +16,7 @@ public class Equipment {
 
     private String name;
     private String type;
+    private String status;
 
     //Connecting with Room
     @ManyToOne
@@ -29,4 +30,20 @@ public class Equipment {
 
     //Constructor
     public Equipment() {}
+
+    public Equipment(String name, String type, String status) {
+        this.name = name;
+        this.type = type;
+        this.status = status;
+    }
+
+    //Getters and Setters
+    public int getId() {return id;}
+    public String getName() {return name;}
+    public String getType() {return type;}
+    public String getStatus() {return status;}
+
+    public void setName(String name) {this.name = name;}
+    public void setType(String type) {this.type = type;}
+    public void setStatus(String status) {this.status = status;}
 }

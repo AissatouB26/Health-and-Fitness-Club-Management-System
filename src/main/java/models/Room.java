@@ -18,7 +18,7 @@ public class Room {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    private String name;
+    private int roomNumber;
     private int capacity;
 
     //Connecting with Admin
@@ -36,4 +36,17 @@ public class Room {
 
     //Constructor
     public Room() {}
+
+    public Room(int roomNumber, int capacity) {
+        this.roomNumber = roomNumber;
+        this.capacity = capacity;
+    }
+
+    //Getters and Setters
+    public int getId() {return id;}
+    public int getRoomNumber() {return roomNumber;}
+    public int getCapacity() {return capacity;}
+
+    public void setName(int roomNumber) {this.roomNumber = roomNumber;}
+    public void setCapacity(int capacity) {this.capacity = capacity;}
 }

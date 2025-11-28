@@ -22,4 +22,19 @@ public class Trainer {
     @OneToMany(mappedBy = "trainer")
     private List<FitnessClass> classes = new ArrayList<>();
 
+    //Constructor
+    public Trainer() {}
+
+    public Trainer(String name, String email) {
+        this.name = name;
+        this.email = email;
+    }
+
+    //Getters and Setters
+    public int getId() {return id;}
+    public String getName() {return name;}
+    public String getEmail() {return email;}
+
+    public void setName(String name) {this.name = name;}
+    public void setEmail(String email) {this.email = email;}
 }
