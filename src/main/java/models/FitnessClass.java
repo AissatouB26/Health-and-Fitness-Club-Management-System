@@ -38,6 +38,15 @@ public class FitnessClass {
     @JoinColumn(name = "trainer_id")
     private Trainer trainer;
 
+    //Connecting with Admin
+    @ManyToOne
+    @JoinColumn(name = "admin_id")
+    private Admin admin;
+
+    //Connecting with Room
+    @ManyToOne
+    @JoinColumn(name = "room_id")
+    private Room room;
 
     //Constructor
     public FitnessClass() {}

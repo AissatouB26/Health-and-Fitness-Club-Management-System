@@ -23,6 +23,9 @@
         <mapping class="models.Member"/>
         <mapping class="models.FitnessClass"/>
         <mapping class="models.Trainer"/>
+        <mapping class="models.Admin"/>
+        <mapping class="models.Room"/>
+        <mapping class="models.Equipment"/>
 
     </session-factory>
 </hibernate-configuration>
