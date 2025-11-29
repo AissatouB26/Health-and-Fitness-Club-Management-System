@@ -1,5 +1,5 @@
 package models;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +22,8 @@ public class FitnessClass {
     private int id;
     private String name;
     private int capacity;
-    private LocalDateTime startTime, endTime;
+    private int dayOfWeek;
+    private LocalDate startTime, endTime;
 
     //Connecting with Member
     @ManyToMany
@@ -51,9 +52,10 @@ public class FitnessClass {
     //Constructor
     public FitnessClass() {}
 
-    public FitnessClass(String name, int capacity, LocalDateTime startTime, LocalDateTime endTime) {
+    public FitnessClass(String name, int capacity, int dayOfWeek, LocalDate startTime, LocalDate endTime) {
         this.name = name;
         this.capacity = capacity;
+        this.dayOfWeek = dayOfWeek;
         this.startTime = startTime;
         this.endTime = endTime;
     }
@@ -62,12 +64,14 @@ public class FitnessClass {
     public int getId() {return id;}
     public String getName() {return name;}
     public int getCapacity() {return capacity;}
-    public LocalDateTime getStartTime() {return startTime;}
-    public LocalDateTime getEndTime() {return endTime;}
+    public int getDayOfWeek() {return dayOfWeek;}
+    public LocalDate getStartTime() {return startTime;}
+    public LocalDate getEndTime() {return endTime;}
 
     public void setName(String name) {this.name = name;}
     public void setCapacity(int capacity) {this.capacity = capacity;}
-    public void setStartTime(LocalDateTime startTime) {this.startTime = startTime;}
-    public void setEndTime(LocalDateTime endTime) {this.endTime = endTime;}
+    public void setDayOfWeek(int dayOfWeek) {this.dayOfWeek = dayOfWeek;}
+    public void setStartTime(LocalDate startTime) {this.startTime = startTime;}
+    public void setEndTime(LocalDate endTime) {this.endTime = endTime;}
 
 }
