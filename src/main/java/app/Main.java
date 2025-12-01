@@ -158,6 +158,27 @@ public class Main {
                             System.out.println("Invalid choice.");
                     }
                 }
+                else if(user instanceof Trainer){
+                    System.out.println("What would you like to do?");
+                    System.out.println("1. View Schedule");
+                    System.out.println("2. Search Member by Name");
+                    System.out.println("3. Exit");
+                    String action = scanner.nextLine();
+                    switch(action) {
+                        case "1":
+                            viewTrainerSchedule((Trainer) user, classes);
+                            break;
+                        case "2":
+                            System.out.print("Enter member name to search: ");
+                            String name = scanner.nextLine();
+                            searchMemberByName(members, name);
+                            break;
+                        case "3":
+                            return;
+                        default:
+                            System.out.println("Invalid choice.");
+                    }
+                }
                 session.getTransaction().commit();
             }
     
@@ -294,9 +315,31 @@ public class Main {
 
     /*Trainer functions*/
     //Function that allows trainers to view their schedule and assigned classes
+    private static void viewTrainerSchedule(Trainer trainer, List<FitnessClass> classes) {
+        System.out.println("Classes assigned to " + trainer.getName() + ":");
+        for (FitnessClass fitnessClass : classes) {
+            if (fitnessClass.getTrainer() != null && fitnessClass.getTrainer().getId() == trainer.getId()) {
+                System.out.println("Class Name: " + fitnessClass.getName() +
+                                   ", Day of Week: " + fitnessClass.getDayOfWeek() +
+                                   ", Start Time: " + fitnessClass.getStartTime() +
+                                   ", End Time: " + fitnessClass.getEndTime() +
+                                   ", Room: " + (fitnessClass.getRoom() != null ? fitnessClass.getRoom().getRoomNumber() : "None"));
+            }
+        }
+    }
 
     
     //Function that allows trainers to search for members by name and view their current goal and last metric
+    private static void searchMemberByName(List<Member> members, String name) {
+        System.out.println("Search Results for '" + name + "':");
+        for (Member member : members) {
+            if (member.getName().toLowerCase().contains(name.toLowerCase())) {
+                System.out.println("Name: " + member.getName() +
+                                   ", Current Goal Weight: " + member.getGoalWeight() +
+                                   ", Last Recorded Weight: " + member.getWeight());
+            }
+        }
+    }
 
 
     /*Admin functions*/
