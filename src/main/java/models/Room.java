@@ -31,7 +31,7 @@ public class Room {
     private List<Equipment> equipments = new ArrayList<>();
 
     //Connecting with FitnessClass
-    @OneToMany(mappedBy = "room")
+    @OneToMany(mappedBy = "room", fetch = jakarta.persistence.FetchType.EAGER)
     private List<FitnessClass> classes = new ArrayList<>();
 
     //Constructor

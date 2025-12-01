@@ -8,13 +8,11 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "equipments")
+@Table(name = "equipment")
 public class Equipment {
     @Id 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
-    private String name;
     private String type;
     private String status;
 
@@ -31,20 +29,17 @@ public class Equipment {
     //Constructor
     public Equipment() {}
 
-    public Equipment(String name, String type, String status) {
-        this.name = name;
+    public Equipment(String type, String status) {
         this.type = type;
         this.status = status;
     }
 
     //Getters and Setters
     public int getId() {return id;}
-    public String getName() {return name;}
     public String getType() {return type;}
     public String getStatus() {return status;}
     public Room getRoom() {return room;}
 
-    public void setName(String name) {this.name = name;}
     public void setType(String type) {this.type = type;}
     public void setStatus(String status) {this.status = status;}
     public void setRoom(Room room) {this.room = room;}

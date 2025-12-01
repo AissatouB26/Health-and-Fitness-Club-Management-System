@@ -1,7 +1,7 @@
 package app;
 import java.io.File;
 import java.time.LocalTime;
-import java.util. List;
+import java.util.List;
 import java.util.Scanner;
 
 import org.hibernate.Session;
@@ -31,7 +31,7 @@ public class Main {
             List<Member> members = session.createQuery("from Member", Member.class).list();
             List<Trainer> trainers = session.createQuery("from Trainer", Trainer.class).list();
             List<Admin> admins = session.createQuery("from Admin", Admin.class).list();
-            List<Equipment> equipments = session.createQuery("from Equipment", Equipment.class).list();
+            List<Equipment> equipment = session.createQuery("from Equipment", Equipment.class).list();
             List<FitnessClass> classes = session.createQuery("from FitnessClass", FitnessClass.class).list();
             List<Room> rooms = session.createQuery("from Room", Room.class).list();
 
@@ -116,6 +116,7 @@ public class Main {
                             System.out.println("What would you like to do?");
                             System.out.println("1. Assign Room to Class");
                             System.out.println("2. Unassign  Room from Class");
+                            System.out.println("3. View All Rooms");
                             String roomAction = scanner.nextLine();
                             switch(roomAction) {
                                 case "1":
@@ -123,6 +124,9 @@ public class Main {
                                     break;
                                 case "2":
                                     unassignRoomFromClass(session, classes);
+                                    break;
+                                case "3":
+                                    viewAllRooms(rooms);
                                     break;
                                 default:
                                     System.out.println("Invalid choice.");
@@ -132,13 +136,17 @@ public class Main {
                             System.out.println("What would you like to do?");
                             System.out.println("1. Update Equipment Status");
                             System.out.println("2. Assign Equipment to Room");
+                            System.out.println("3. View All Equipment");
                             String equipAction = scanner.nextLine();
                             switch(equipAction) {
                                 case "1":
-                                    updateEquipmentStatus(session, equipments);
+                                    updateEquipmentStatus(session, equipment);
                                     break;
                                 case "2":
-                                    assignEquipmentToRoom(session, equipments, rooms);
+                                    assignEquipmentToRoom(session, equipment, rooms);
+                                    break;
+                                case "3":
+                                    viewAllEquipment(equipment);
                                     break;
                                 default:
                                     System.out.println("Invalid choice.");
@@ -377,18 +385,20 @@ public class Main {
     private static void updateEquipmentStatus(Session session, List<Equipment> equipment) {
         System.out.println("All Equipment:");
         for (int i = 0; i < equipment.size(); i++) {
-            System.out.println((i + 1) + ". " + equipment.get(i).getName() + " - " + equipment.get(i).getStatus() + equipment.get(i).getRoom().getRoomNumber());
+            Equipment e = equipment.get(i);
+            String roomInfo = (e.getRoom() != null) ? " - Room " + e.getRoom().getRoomNumber() : " - No Room Assigned";
+            System.out.println((i + 1) + ". " + e.getType() + " - " + e.getStatus() + roomInfo);
         }
         
         System.out.print("Select equipment by number: ");
         int equipmentIndex = Integer.parseInt(scanner.nextLine()) - 1;
         Equipment selectedEquipment = equipment.get(equipmentIndex);
 
-        System.out.print("Enter new status for " + selectedEquipment.getName() + ": ");
+        System.out.print("Enter new status for " + selectedEquipment.getType() + ": ");
         String newStatus = scanner.nextLine();
         selectedEquipment.setStatus(newStatus);
         session.persist(selectedEquipment);
-        System.out.println("Updated status of " + selectedEquipment.getName() + " to " + newStatus);
+        System.out.println("Updated status of " + selectedEquipment.getType() + " to " + newStatus);
 
     }
 
@@ -396,7 +406,9 @@ public class Main {
     private static void assignEquipmentToRoom(Session session, List<Equipment> equipment, List<Room> rooms) {
         System.out.println("Available Equipment:");
         for (int i = 0; i < equipment.size(); i++) {
-            System.out.println((i + 1) + ". " + equipment.get(i).getName() + " - " + equipment.get(i).getStatus() + equipment.get(i).getRoom().getRoomNumber());
+            Equipment e = equipment.get(i);
+            String roomInfo = (e.getRoom() != null) ? " - Room " + e.getRoom().getRoomNumber() : " - No Room Assigned";
+            System.out.println((i + 1) + ". " + e.getType() + " - " + e.getStatus() + roomInfo);
         }
         System.out.print("Select equipment by number: ");
         int equipmentIndex = Integer.parseInt(scanner.nextLine()) - 1;
@@ -412,7 +424,7 @@ public class Main {
 
         selectedEquipment.setRoom(selectedRoom);
         session.persist(selectedEquipment);
-        System.out.println("Assigned " + selectedEquipment.getName() + " to Room " + selectedRoom.getRoomNumber());
+        System.out.println("Assigned " + selectedEquipment.getType() + " to Room " + selectedRoom.getRoomNumber());
     }
 
     //Update class scheduele
@@ -485,6 +497,23 @@ public class Main {
                                ", End Time: " + fitnessClass.getEndTime() +
                                ", Trainer: " + (fitnessClass.getTrainer() != null ? fitnessClass.getTrainer().getName() : "None") +
                                ", Room: " + (fitnessClass.getRoom() != null ? fitnessClass.getRoom().getRoomNumber() : "None"));
+        }
+    }
+
+    //Function to view all equipment
+    private static void viewAllEquipment(List<Equipment> equipment) {
+        System.out.println("All Equipment:");
+        for (Equipment e : equipment) {
+            String roomInfo = (e.getRoom() != null) ? " - Room " + e.getRoom().getRoomNumber() : " - No Room Assigned";
+            System.out.println("Type: " + e.getType() + ", Status: " + e.getStatus() + roomInfo);
+        }
+    }   
+
+    //Function to view all rooms
+    private static void viewAllRooms(List<Room> rooms) {
+        System.out.println("All Rooms:");
+        for (Room r : rooms) {
+            System.out.println("Room Number: " + r.getRoomNumber() + ", Capacity: " + r.getCapacity());
         }
     }
 
