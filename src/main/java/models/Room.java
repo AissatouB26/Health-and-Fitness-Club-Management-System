@@ -56,9 +56,11 @@ public class Room {
     public boolean isAvailable(FitnessClass newClass) {
         for (FitnessClass existingClass : classes) {
             // Check for time overlap
-            if (newClass.getStartTime().isBefore(existingClass.getEndTime()) &&
-                existingClass.getStartTime().isBefore(newClass.getEndTime())) {
-                return false; 
+            if(existingClass.getDayOfWeek() == newClass.getDayOfWeek()) {
+                if (!newClass.getEndTime().isBefore(existingClass.getStartTime()) &&
+                    !newClass.getStartTime().isAfter(existingClass.getEndTime())) {
+                    return false; 
+                }
             }
         }
         return true; 

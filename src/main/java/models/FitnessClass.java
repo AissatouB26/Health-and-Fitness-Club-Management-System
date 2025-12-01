@@ -1,5 +1,5 @@
 package models;
-import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +26,12 @@ public class FitnessClass {
 
     @Column(name = "day_of_week", nullable=true)
     private int dayOfWeek;
-    private LocalDate startTime, endTime;
+
+    @Column(name = "start_time")
+    private LocalTime startTime;
+
+    @Column(name = "end_time")
+    private LocalTime endTime;
 
     //Connecting with Member
     @ManyToMany
@@ -55,7 +60,7 @@ public class FitnessClass {
     //Constructor
     public FitnessClass() {}
 
-    public FitnessClass(String name, int capacity, int dayOfWeek, LocalDate startTime, LocalDate endTime) {
+    public FitnessClass(String name, int capacity, int dayOfWeek, LocalTime startTime, LocalTime endTime) {
         this.name = name;
         this.capacity = capacity;
         this.dayOfWeek = dayOfWeek;
@@ -68,16 +73,16 @@ public class FitnessClass {
     public String getName() {return name;}
     public int getCapacity() {return capacity;}
     public int getDayOfWeek() {return dayOfWeek;}
-    public LocalDate getStartTime() {return startTime;}
-    public LocalDate getEndTime() {return endTime;}
+    public LocalTime getStartTime() {return startTime;}
+    public LocalTime getEndTime() {return endTime;}
     public Trainer getTrainer() {return trainer;}
     public Room getRoom() {return room;}
 
     public void setName(String name) {this.name = name;}
     public void setCapacity(int capacity) {this.capacity = capacity;}
     public void setDayOfWeek(int dayOfWeek) {this.dayOfWeek = dayOfWeek;}
-    public void setStartTime(LocalDate startTime) {this.startTime = startTime;}
-    public void setEndTime(LocalDate endTime) {this.endTime = endTime;}
+    public void setStartTime(LocalTime startTime) {this.startTime = startTime;}
+    public void setEndTime(LocalTime endTime) {this.endTime = endTime;}
     public void setTrainer(Trainer trainer) {this.trainer = trainer;}
     public void setRoom(Room room) {this.room = room;}
 

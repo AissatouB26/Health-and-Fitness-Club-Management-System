@@ -1,8 +1,8 @@
 package app;
 import java.io.File;
-import java.util.List;
-import java.util. Scanner;
-import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util. List;
+import java.util.Scanner;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -12,8 +12,8 @@ import models.Admin;
 import models.Equipment;
 import models.FitnessClass;
 import models.Member;
-import models.Trainer;
 import models.Room;
+import models.Trainer;
 
 
 public class Main {
@@ -57,25 +57,109 @@ public class Main {
                 System.out.println("Invalid choice. Exiting.");
                 return;
             }
+             session.getTransaction().commit();
 
-            /* Member Interactions */
-            if(user instanceof Member){
-                System.out.println("What would you like to do?");
-                System.out.println("1. Update Profile");
-                String action = scanner.nextLine();
-                if (action.equals("1")) {
-                    updateProfile((Member) user);
-                    session.persist(user);
+             //App main loop
+            while (true) {
+                session.beginTransaction();
+                /* Member Interactions */
+                if(user instanceof Member){
+                    System.out.println("What would you like to do?");
+                    System.out.println("1. Update Profile");
+                    System.out.println("4. Exit");
+                    String action = scanner.nextLine();
+                    switch(action) {
+                        case "1":
+                            updateProfile((Member) user);
+                            session.persist(user);
+                            break;
+                        case "4":
+                            return;
+                        default:
+                            System.out.println("Invalid choice.");
+                    }
                 }
+                /* Admin Interactions */
+                else if(user instanceof Admin){
+                    System.out.println("What would you like to do?");
+                    System.out.println("1. Manage Classes");
+                    System.out.println("2. Book Rooms");
+                    System.out.println("3. Manage Equipment");
+                    System.out.println("4. Exit");
+                    String action = scanner.nextLine();
+                    switch(action) {
+                        case "1":
+                            System.out.println("What would you like to do?");
+                            System.out.println("1. Create Fitness Class");
+                            System.out.println("2. Assign Trainer to Class");
+                            System.out.println("3. Update Class Schedule");
+                            System.out.println("4. View Classes");
+                            String classAction = scanner.nextLine();
+                            switch(classAction) {
+                                case "1":
+                                    createFitnessClass(session, classes);
+                                    break;
+                                case "2":
+                                    assignTrainerToClass(session, trainers, classes);
+                                    break;
+                                case "3":
+                                    updateClassSchedule(session, classes);
+                                    break;
+                                case "4":
+                                    viewAllClasses(classes);
+                                    break;
+                                default:
+                                    System.out.println("Invalid choice.");
+                            }
+                            break;
+                        case "2":
+                            System.out.println("What would you like to do?");
+                            System.out.println("1. Assign Room to Class");
+                            System.out.println("2. Unassign  Room from Class");
+                            String roomAction = scanner.nextLine();
+                            switch(roomAction) {
+                                case "1":
+                                    assignRoomToClasses(session, rooms, classes);
+                                    break;
+                                case "2":
+                                    unassignRoomFromClass(session, classes);
+                                    break;
+                                default:
+                                    System.out.println("Invalid choice.");
+                            }
+                            break;
+                        case "3":
+                            System.out.println("What would you like to do?");
+                            System.out.println("1. Update Equipment Status");
+                            System.out.println("2. Assign Equipment to Room");
+                            String equipAction = scanner.nextLine();
+                            switch(equipAction) {
+                                case "1":
+                                    updateEquipmentStatus(session, equipments);
+                                    break;
+                                case "2":
+                                    assignEquipmentToRoom(session, equipments, rooms);
+                                    break;
+                                default:
+                                    System.out.println("Invalid choice.");
+                            }
+                            break;
+                        case "4":
+                            return;
+                        default:
+                            System.out.println("Invalid choice.");
+                    }
+                }
+                session.getTransaction().commit();
             }
-
-            session.getTransaction().commit();
+    
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             sessionFactory.close();
         }
     }
+    
 
     //Login and Signup Methods
     private static Object login(List<Member> members, List<Trainer> trainers, List<Admin> admins) {
@@ -209,26 +293,27 @@ public class Main {
 
     /*Admin functions*/
 
-    //Function that allows admins to create classes 
-    private static void createFitnessClass(Session session) {
+    //Function to create classes 
+    private static void createFitnessClass(Session session, List<FitnessClass> classes) {
         System.out.print("Enter class name: ");
         String name = scanner.nextLine();
         System.out.print("Enter capacity: ");
         int capacity = Integer.parseInt(scanner.nextLine());
         System.out.print("Enter day of week (1=Sunday, 7=Saturday): ");
         int dayOfWeek = Integer.parseInt(scanner.nextLine());
-        System.out.print("Enter start time (YYYY-MM-DD): ");
+        System.out.print("Enter start time (Hours:Minutes): ");
         String startInput = scanner.nextLine();
-        System.out.print("Enter end time (YYYY-MM-DD): ");
+        System.out.print("Enter end time (Hours:Minutes): ");
         String endInput = scanner.nextLine();
 
         FitnessClass newClass = new FitnessClass(name, capacity, dayOfWeek, 
-            LocalDate.parse(startInput), LocalDate.parse(endInput));
+            LocalTime.parse(startInput), LocalTime.parse(endInput));
         session.persist(newClass);
+        classes.add(newClass);
         System.out.println("Created new class: " + name);
     }
 
-    //Function that allows admins to assign trainers to classes
+    //Function to assign trainers to classes
     private static void assignTrainerToClass(Session session, List<Trainer> trainers, List<FitnessClass> classes) {
         System.out.println("Available Trainers:");
         for (int i = 0; i < trainers.size(); i++) {
@@ -260,7 +345,7 @@ public class Main {
     private static void assignRoomToClasses(Session session, List<Room> rooms, List<FitnessClass> classes) {
         System.out.println("Available Rooms:");
         for (int i = 0; i < rooms.size(); i++) {
-            System.out.println((i + 1) + ". Room " + rooms.get(i).getRoomNumber());
+            System.out.println((i + 1) + ". Room " + rooms.get(i).getRoomNumber() + " (Capacity: " + rooms.get(i).getCapacity() + ")");
         }
         System.out.print("Select a room by number: ");
         int roomIndex = Integer.parseInt(scanner.nextLine()) - 1;
@@ -268,7 +353,7 @@ public class Main {
 
         System.out.println("Available Classes:");
         for (int i = 0; i < classes.size(); i++) {
-            System.out.println((i + 1) + ". " + classes.get(i).getName());
+            System.out.println((i + 1) + ". " + classes.get(i).getName() + " (Capacity: " + classes.get(i).getCapacity() + ")");
         }
         System.out.print("Select a class by number: ");
         int classIndex = Integer.parseInt(scanner.nextLine()) - 1;
@@ -278,13 +363,17 @@ public class Main {
             System.out.println("Room is not available for this class time.");
             return;
         }
+        else if(selectedRoom.getCapacity() < selectedClass.getCapacity()) {
+            System.out.println("Room capacity is less than class capacity.");
+            return;
+        }
 
         selectedClass.setRoom(selectedRoom);
-        session.update(selectedClass);
+        session.merge(selectedClass);
         System.out.println("Assigned Room " + selectedRoom.getRoomNumber() + " to " + selectedClass.getName());
     }
     
-    //Function that allows admins to manage equipment inventory
+    //Function to manage update equipment status
     private static void updateEquipmentStatus(Session session, List<Equipment> equipment) {
         System.out.println("All Equipment:");
         for (int i = 0; i < equipment.size(); i++) {
@@ -326,11 +415,93 @@ public class Main {
         System.out.println("Assigned " + selectedEquipment.getName() + " to Room " + selectedRoom.getRoomNumber());
     }
 
+    //Update class scheduele
+    private static void updateClassSchedule(Session session, List<FitnessClass> classes) {
+        System.out.println("Available Classes:");
+        for (int i = 0; i < classes.size(); i++) {
+            System.out.println((i + 1) + ". " + classes.get(i).getName());
+        }
+        System.out.print("Select a class by number: ");
+        int classIndex = Integer.parseInt(scanner.nextLine()) - 1;
+        FitnessClass selectedClass = classes.get(classIndex);
+        int newDay;
+        LocalTime newStart, newEnd;
 
-    //Function that allows admins to manage rooms
+        System.out.print("Enter new day of week (1=Sunday, 7=Saturday) (current: " + selectedClass.getDayOfWeek() + "): ");
+        String dayInput = scanner.nextLine();
+        if (!dayInput.isBlank()) {
+            newDay = Integer.parseInt(dayInput);
+        } else {
+            newDay = selectedClass.getDayOfWeek();
+        }
 
+        System.out.print("Enter new start time (YYYY-MM-DD) (current: " + selectedClass.getStartTime() + "): ");
+        String startInput = scanner.nextLine();
+        if (!startInput.isBlank()) {
+            newStart = LocalTime.parse(startInput);
+        } else {
+            newStart = selectedClass.getStartTime();
+        }
 
+        System.out.print("Enter new end time (YYYY-MM-DD) (current: " + selectedClass.getEndTime() + "): ");
+        String endInput = scanner.nextLine();
+        if (!endInput.isBlank()) {
+            newEnd = LocalTime.parse(endInput);
+        } else {
+            newEnd = selectedClass.getEndTime();
+        }
 
+        // Temporarily create a copy with new schedule for availability check
+        FitnessClass temp = new FitnessClass();
+        temp.setRoom(selectedClass.getRoom());
+        temp.setDayOfWeek(newDay);
+        temp.setStartTime(newStart);
+        temp.setEndTime(newEnd);
+
+        //Check if assigned room is available
+        Room assignedRoom = temp.getRoom();
+        if (assignedRoom != null && !assignedRoom.isAvailable(temp)) {
+            System.out.println("Warning: The assigned room is not available for the new schedule.");
+            System.out.print("Please assign a different room  or adjust the schedule");
+            return;
+        }
+
+        //If all good, update class schedule
+        selectedClass.setDayOfWeek(newDay);
+        selectedClass.setStartTime(newStart);
+        selectedClass.setEndTime(newEnd);
+        session.merge(selectedClass);
+        System.out.println("Updated schedule for " + selectedClass.getName());
+    }
+
+    //Function to view all classes
+    private static void viewAllClasses(List<FitnessClass> classes) {
+        System.out.println("All Fitness Classes:");
+        for (FitnessClass fitnessClass : classes) {
+            System.out.println("Class Name: " + fitnessClass.getName() +
+                               ", Capacity: " + fitnessClass.getCapacity() +
+                               ", Day of Week: " + fitnessClass.getDayOfWeek() +
+                               ", Start Time: " + fitnessClass.getStartTime() +
+                               ", End Time: " + fitnessClass.getEndTime() +
+                               ", Trainer: " + (fitnessClass.getTrainer() != null ? fitnessClass.getTrainer().getName() : "None") +
+                               ", Room: " + (fitnessClass.getRoom() != null ? fitnessClass.getRoom().getRoomNumber() : "None"));
+        }
+    }
+
+    //Unassign a room from a class
+    private static void unassignRoomFromClass(Session session, List<FitnessClass> classes) {
+        System.out.println("Available Classes:");
+        for (int i = 0; i < classes.size(); i++) {
+            System.out.println((i + 1) + ". " + classes.get(i).getName());
+        }
+        System.out.print("Select a class by number to unassign its room: ");
+        int classIndex = Integer.parseInt(scanner.nextLine()) - 1;
+        FitnessClass selectedClass = classes.get(classIndex);
+
+        selectedClass.setRoom(null);
+        session.merge(selectedClass);
+        System.out.println("Unassigned room from " + selectedClass.getName());
+    }
 }
 
 
