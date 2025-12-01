@@ -46,7 +46,21 @@ public class Room {
     public int getId() {return id;}
     public int getRoomNumber() {return roomNumber;}
     public int getCapacity() {return capacity;}
+    public FitnessClass getClasses() {return null;}
 
     public void setName(int roomNumber) {this.roomNumber = roomNumber;}
     public void setCapacity(int capacity) {this.capacity = capacity;}
+    public void setClasses(List<FitnessClass> classes) {this.classes = classes;}
+
+    //Check if room is available for that class
+    public boolean isAvailable(FitnessClass newClass) {
+        for (FitnessClass existingClass : classes) {
+            // Check for time overlap
+            if (newClass.getStartTime().isBefore(existingClass.getEndTime()) &&
+                existingClass.getStartTime().isBefore(newClass.getEndTime())) {
+                return false; 
+            }
+        }
+        return true; 
+    }
 }

@@ -19,8 +19,8 @@ public class Member {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
-    private int age, weight;
-    private Integer height, steps;
+    private int age, weight, height;
+    private Integer steps;
 
     @Column(name ="heart_rate")
     private Integer heartRate;
@@ -42,10 +42,11 @@ public class Member {
     //Constructor
     public Member() {}
 
-    public Member(String name, int age, int weight, String email) {
+    public Member(String name, int age, int weight, int height, String email) {
         this.name = name;
         this.age = age;
         this.weight = weight;
+        this.height = height;
         this.email = email;
     }
 
@@ -55,7 +56,7 @@ public class Member {
     public int getAge(){ return age;}
     public String getEmail(){ return email; }
     public int getWeight(){return weight;}
-    public Integer getHeight(){return height;}
+    public int getHeight(){return height;}
     public Integer getGoalWeight(){return goalWeight;}
     public Integer getHeartRate(){return heartRate;}
     public Integer getSteps(){return steps;}

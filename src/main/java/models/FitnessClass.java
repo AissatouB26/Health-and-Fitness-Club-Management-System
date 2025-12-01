@@ -70,11 +70,15 @@ public class FitnessClass {
     public int getDayOfWeek() {return dayOfWeek;}
     public LocalDate getStartTime() {return startTime;}
     public LocalDate getEndTime() {return endTime;}
+    public Trainer getTrainer() {return trainer;}
+    public Room getRoom() {return room;}
 
     public void setName(String name) {this.name = name;}
     public void setCapacity(int capacity) {this.capacity = capacity;}
     public void setDayOfWeek(int dayOfWeek) {this.dayOfWeek = dayOfWeek;}
     public void setStartTime(LocalDate startTime) {this.startTime = startTime;}
     public void setEndTime(LocalDate endTime) {this.endTime = endTime;}
+    public void setTrainer(Trainer trainer) {this.trainer = trainer;}
+    public void setRoom(Room room) {this.room = room;}
 
 }

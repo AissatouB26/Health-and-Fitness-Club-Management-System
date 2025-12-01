@@ -34,9 +34,11 @@ public class Trainer {
     public int getId() {return id;}
     public String getName() {return name;}
     public String getEmail() {return email;}
+    public List<FitnessClass> getClasses() {return classes;}
 
     public void setName(String name) {this.name = name;}
     public void setEmail(String email) {this.email = email;}
+    public void setClasses(List<FitnessClass> classes) {this.classes = classes;}
 
     // Check if trainer is available for that class
     public boolean isAvailable(FitnessClass newClass) {
