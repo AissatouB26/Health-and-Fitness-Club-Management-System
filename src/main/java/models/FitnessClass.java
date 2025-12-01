@@ -3,6 +3,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,6 +23,8 @@ public class FitnessClass {
     private int id;
     private String name;
     private int capacity;
+
+    @Column(name = "day_of_week", nullable=true)
     private int dayOfWeek;
     private LocalDate startTime, endTime;
 

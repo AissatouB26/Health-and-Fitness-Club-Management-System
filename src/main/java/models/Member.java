@@ -2,6 +2,7 @@ package models;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,6 +20,14 @@ public class Member {
     private int id;
     private String name;
     private int age, weight;
+    private Integer height, steps;
+
+    @Column(name ="heart_rate")
+    private Integer heartRate;
+
+    @Column(name="goal_weight")
+    private Integer goalWeight;
+
     private String email;
 
     //Connecting with FitnessClass
@@ -46,9 +55,18 @@ public class Member {
     public int getAge(){ return age;}
     public String getEmail(){ return email; }
     public int getWeight(){return weight;}
+    public Integer getHeight(){return height;}
+    public Integer getGoalWeight(){return goalWeight;}
+    public Integer getHeartRate(){return heartRate;}
+    public Integer getSteps(){return steps;}
 
     public void setName(String name) {this.name = name;}
     public void setAge(int age) {this.age = age;}
     public void setWeight(int weight) {this.weight = weight;}
     public void setEmail(String email) {this.email = email;}
+    public void setHeight(int height) {this.height = height;}
+    public void setGoalWeight(int goalWeight) {this.goalWeight = goalWeight;}
+    public void setHeartRate(int heartRate) {this.heartRate = heartRate;}
+    public void setSteps(int steps) {this.steps = steps;}
+    
 }
