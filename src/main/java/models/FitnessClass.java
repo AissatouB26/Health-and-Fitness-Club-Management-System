@@ -77,6 +77,8 @@ public class FitnessClass {
     public LocalTime getEndTime() {return endTime;}
     public Trainer getTrainer() {return trainer;}
     public Room getRoom() {return room;}
+    public List<Member> getMembers() {return members;}
+    public Admin getAdmin() {return admin;}
 
     public void setName(String name) {this.name = name;}
     public void setCapacity(int capacity) {this.capacity = capacity;}
@@ -85,5 +87,7 @@ public class FitnessClass {
     public void setEndTime(LocalTime endTime) {this.endTime = endTime;}
     public void setTrainer(Trainer trainer) {this.trainer = trainer;}
     public void setRoom(Room room) {this.room = room;}
+    public void addMember(Member member) {this.members.add(member);}
+    public void setAdmin(Admin admin) {this.admin = admin;}
 
 }

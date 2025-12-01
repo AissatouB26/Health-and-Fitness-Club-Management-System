@@ -66,14 +66,28 @@ public class Main {
                 if(user instanceof Member){
                     System.out.println("What would you like to do?");
                     System.out.println("1. Update Profile");
-                    System.out.println("4. Exit");
+                    System.out.println("2. View Dashboard");
+                    System.out.println("3. Book a Class");
+                    System.out.println("4. Unbook a Class");
+                    System.out.println("5. Exit");
                     String action = scanner.nextLine();
                     switch(action) {
                         case "1":
                             updateProfile((Member) user);
                             session.persist(user);
                             break;
+                        case "2":
+                            viewDashboard((Member) user);
+                            break;
+                        case "3":
+                            bookClass((Member) user, classes);
+                            session.persist(user);
+                            break;
                         case "4":
+                            unbookClass((Member) user);
+                            session.persist(user);
+                            break;
+                        case "5":
                             return;
                         default:
                             System.out.println("Invalid choice.");
@@ -97,7 +111,7 @@ public class Main {
                             String classAction = scanner.nextLine();
                             switch(classAction) {
                                 case "1":
-                                    createFitnessClass(session, classes);
+                                    createFitnessClass(session, classes, (Admin) user);
                                     break;
                                 case "2":
                                     assignTrainerToClass(session, trainers, classes);
@@ -308,10 +322,83 @@ public class Main {
 
 
     //Function that displays latest health stats, active goals, past class count and upcoming sessions
+    private static void viewDashboard(Member member) {
+        System.out.println("Health Dashboard for " + member.getName() + ":");
+        System.out.println("Current Weight: " + member.getWeight());
+        System.out.println("Goal Weight: " + (member.getGoalWeight() != null ? member.getGoalWeight() : "Not set"));
+        System.out.println("Heart Rate: " + (member.getHeartRate() != null ? member.getHeartRate() : "Not recorded"));
+        System.out.println("Steps Taken: " + (member.getSteps() != null ? member.getSteps() : "Not recorded"));
 
+        // Count enrolled classes and upcoming classes this week
+        int enrolledClasses = 0;
+        int upcomingThisWeek = 0;
+        LocalTime now = LocalTime.now();
+        
+        // Convert Java's DayOfWeek (1=Monday, 7=Sunday) to your format (1=Sunday, 7=Saturday)
+        int javaDayOfWeek = java.time.LocalDate.now().getDayOfWeek().getValue();
+        int today = (javaDayOfWeek % 7) + 1; // 1=Sunday, 2=Monday, ..., 7=Saturday
+        
+        for (FitnessClass fitnessClass : member.getClasses()) {
+            if (fitnessClass.getMembers().contains(member)) {
+                enrolledClasses++;
+                
+                // Check if class is today but hasn't ended yet, or is later this week
+                if (fitnessClass.getDayOfWeek() > today ||
+                    (fitnessClass.getDayOfWeek() == today && fitnessClass.getEndTime().isAfter(now))) {
+                    upcomingThisWeek++;
+                }
+
+                System.out.println("Enrolled Class: " + fitnessClass.getName() +
+                                   ", Day of Week: " + fitnessClass.getDayOfWeek() +
+                                   ", Start Time: " + fitnessClass.getStartTime() +
+                                   ", End Time: " + fitnessClass.getEndTime());
+            }
+        }
+        System.out.println("Total Enrolled Classes: " + enrolledClasses);
+        System.out.println("Upcoming Classes This Week: " + upcomingThisWeek);
+    }
 
     //Function that allows members to book a class
+    private static void bookClass(Member member, List<FitnessClass> classes) {
+        System.out.println("Available Classes:");
+        for (int i = 0; i < classes.size(); i++) {
+            System.out.println((i + 1) + ". " + classes.get(i).getName());
+        }
+        System.out.print("Select a class by number to book: ");
+        int classIndex = Integer.parseInt(scanner.nextLine()) - 1;
+        FitnessClass selectedClass = classes.get(classIndex);
 
+        if(selectedClass.getMembers().size() >= selectedClass.getCapacity()) {
+            System.out.println("Class is full. Cannot book.");
+            return;
+        }
+        else if(!member.isAvailable(selectedClass)){
+            System.out.println("You have a scheduling conflict with this class.");
+            return;
+        }
+        else if(member.getClasses().contains(selectedClass)){
+            System.out.println("You are already enrolled in this class.");
+            return;
+        }
+
+        selectedClass.getMembers().add(member);
+        System.out.println("Booked " + selectedClass.getName() + " successfully!");
+    }   
+
+    //Unernoll from class
+    private static void unbookClass(Member member) {
+        List<FitnessClass> classes = member.getClasses();
+        System.out.println("Your Enrolled Classes:");
+        for (int i = 0; i < classes.size(); i++) {
+            System.out.println((i + 1) + ". " + classes.get(i).getName());
+        }
+        System.out.print("Select a class by number to unbook: ");
+        int classIndex = Integer.parseInt(scanner.nextLine()) - 1;
+        FitnessClass selectedClass = classes.get(classIndex);
+
+        selectedClass.getMembers().remove(member);
+        System.out.println("Unbooked " + selectedClass.getName() + " successfully!");
+    }
 
     /*Trainer functions*/
     //Function that allows trainers to view their schedule and assigned classes
@@ -343,9 +430,8 @@ public class Main {
 
 
     /*Admin functions*/
-
     //Function to create classes 
-    private static void createFitnessClass(Session session, List<FitnessClass> classes) {
+    private static void createFitnessClass(Session session, List<FitnessClass> classes, Admin user) {
         System.out.print("Enter class name: ");
         String name = scanner.nextLine();
         System.out.print("Enter capacity: ");
@@ -359,6 +445,7 @@ public class Main {
 
         FitnessClass newClass = new FitnessClass(name, capacity, dayOfWeek, 
             LocalTime.parse(startInput), LocalTime.parse(endInput));
+        newClass.setAdmin(user);
         session.persist(newClass);
         classes.add(newClass);
         System.out.println("Created new class: " + name);
@@ -539,7 +626,8 @@ public class Main {
                                ", Start Time: " + fitnessClass.getStartTime() +
                                ", End Time: " + fitnessClass.getEndTime() +
                                ", Trainer: " + (fitnessClass.getTrainer() != null ? fitnessClass.getTrainer().getName() : "None") +
-                               ", Room: " + (fitnessClass.getRoom() != null ? fitnessClass.getRoom().getRoomNumber() : "None"));
+                               ", Room: " + (fitnessClass.getRoom() != null ? fitnessClass.getRoom().getRoomNumber() : "None") +
+                               " Admin: " + (fitnessClass.getAdmin() != null ? fitnessClass.getAdmin().getName() : "None"));
         }
     }
 

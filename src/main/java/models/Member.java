@@ -31,7 +31,7 @@ public class Member {
     private String email;
 
     //Connecting with FitnessClass
-    @ManyToMany
+    @ManyToMany (fetch = jakarta.persistence.FetchType.EAGER)
     @JoinTable(
         name = "member_course",
         joinColumns = @JoinColumn(name = "member_id"),
@@ -60,6 +60,7 @@ public class Member {
     public Integer getGoalWeight(){return goalWeight;}
     public Integer getHeartRate(){return heartRate;}
     public Integer getSteps(){return steps;}
+    public List<FitnessClass> getClasses(){return classes;}
 
     public void setName(String name) {this.name = name;}
     public void setAge(int age) {this.age = age;}
@@ -69,5 +70,20 @@ public class Member {
     public void setGoalWeight(int goalWeight) {this.goalWeight = goalWeight;}
     public void setHeartRate(int heartRate) {this.heartRate = heartRate;}
     public void setSteps(int steps) {this.steps = steps;}
+    public void setClasses(List<FitnessClass> classes) {this.classes = classes;}
+
+    //Check availability in a class
+    public boolean isAvailable(FitnessClass newClass) {
+        for (FitnessClass existingClass : classes) {
+            // Check for time overlap
+            if(existingClass.getDayOfWeek() == newClass.getDayOfWeek()) {
+                if (!newClass.getEndTime().isBefore(existingClass.getStartTime()) &&
+                    !newClass.getStartTime().isAfter(existingClass.getEndTime())) {
+                    return false; 
+                }
+            }
+        }
+        return true; 
+    }
     
 }
