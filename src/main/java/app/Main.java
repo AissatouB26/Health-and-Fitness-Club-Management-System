@@ -180,7 +180,7 @@ public class Main {
                     String action = scanner.nextLine();
                     switch(action) {
                         case "1":
-                            viewTrainerSchedule((Trainer) user, classes);
+                            viewTrainerSchedule((Trainer) user);
                             break;
                         case "2":
                             System.out.print("Enter member name to search: ");
@@ -320,7 +320,6 @@ public class Main {
         System.out.println("Profile updated!");
     } 
 
-
     //Function that displays latest health stats, active goals, past class count and upcoming sessions
     private static void viewDashboard(Member member) {
         System.out.println("Health Dashboard for " + member.getName() + ":");
@@ -329,30 +328,35 @@ public class Main {
         System.out.println("Heart Rate: " + (member.getHeartRate() != null ? member.getHeartRate() : "Not recorded"));
         System.out.println("Steps Taken: " + (member.getSteps() != null ? member.getSteps() : "Not recorded"));
 
-        // Count enrolled classes and upcoming classes this week
-        int enrolledClasses = 0;
+        int enrolledClasses = member.getClasses().size();
         int upcomingThisWeek = 0;
         LocalTime now = LocalTime.now();
         
-        // Convert Java's DayOfWeek (1=Monday, 7=Sunday) to your format (1=Sunday, 7=Saturday)
+        // Convert Java's DayOfWeek (1=Monday, 7=Sunday) to your system (1=Sunday, 7=Saturday)
         int javaDayOfWeek = java.time.LocalDate.now().getDayOfWeek().getValue();
-        int today = (javaDayOfWeek % 7) + 1; // 1=Sunday, 2=Monday, ..., 7=Saturday
+        int today = (javaDayOfWeek % 7) + 1; 
         
         for (FitnessClass fitnessClass : member.getClasses()) {
-            if (fitnessClass.getMembers().contains(member)) {
-                enrolledClasses++;
-                
-                // Check if class is today but hasn't ended yet, or is later this week
-                if (fitnessClass.getDayOfWeek() > today ||
-                    (fitnessClass.getDayOfWeek() == today && fitnessClass.getEndTime().isAfter(now))) {
-                    upcomingThisWeek++;
-                }
-
-                System.out.println("Enrolled Class: " + fitnessClass.getName() +
-                                   ", Day of Week: " + fitnessClass.getDayOfWeek() +
-                                   ", Start Time: " + fitnessClass.getStartTime() +
-                                   ", End Time: " + fitnessClass.getEndTime());
+            int classDayOfWeek = fitnessClass.getDayOfWeek();
+            
+            // Check if class is upcoming this week
+            boolean isUpcoming = false;
+            if (classDayOfWeek > today) {
+                // Class is later this week
+                isUpcoming = true;
+            } else if (classDayOfWeek == today && fitnessClass.getEndTime().isAfter(now)) {
+                // Class is today but hasn't ended yet
+                isUpcoming = true;
             }
+            
+            if (isUpcoming) {
+                upcomingThisWeek++;
+            }
+
+            System.out.println("Enrolled Class: " + fitnessClass.getName() +
+                                ", Day of Week: " + classDayOfWeek +
+                                ", Start Time: " + fitnessClass.getStartTime() +
+                                ", End Time: " + fitnessClass.getEndTime());
         }
         System.out.println("Total Enrolled Classes: " + enrolledClasses);
         System.out.println("Upcoming Classes This Week: " + upcomingThisWeek);
@@ -382,38 +386,58 @@ public class Main {
         }
 
         selectedClass.getMembers().add(member);
+        member.getClasses().add(selectedClass); 
         System.out.println("Booked " + selectedClass.getName() + " successfully!");
     }   
 
-    //Unernoll from class
+    //Unenroll from class
     private static void unbookClass(Member member) {
         List<FitnessClass> classes = member.getClasses();
+        
+        if (classes.isEmpty()) {
+            System.out.println("You are not enrolled in any classes.");
+            return;
+        }
+        
         System.out.println("Your Enrolled Classes:");
         for (int i = 0; i < classes.size(); i++) {
             System.out.println((i + 1) + ". " + classes.get(i).getName());
         }
         System.out.print("Select a class by number to unbook: ");
-        int classIndex = Integer.parseInt(scanner.nextLine()) - 1;
-        FitnessClass selectedClass = classes.get(classIndex);
-
-        selectedClass.getMembers().remove(member);
-        System.out.println("Unbooked " + selectedClass.getName() + " successfully!");
+        
+        try {
+            int classIndex = Integer.parseInt(scanner.nextLine()) - 1;
+            
+            if (classIndex < 0 || classIndex >= classes.size()) {
+                System.out.println("Invalid selection.");
+                return;
+            }
+            
+            FitnessClass selectedClass = classes.get(classIndex);
+            
+            // Remove from BOTH sides of the relationship
+            selectedClass.getMembers().remove(member);  
+            member.getClasses().remove(selectedClass);   
+            
+            System.out.println("Unbooked " + selectedClass.getName() + " successfully!");
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please enter a number.");
+        }
     }
 
     /*Trainer functions*/
     //Function that allows trainers to view their schedule and assigned classes
-    private static void viewTrainerSchedule(Trainer trainer, List<FitnessClass> classes) {
+    private static void viewTrainerSchedule(Trainer trainer) {
         System.out.println("Classes assigned to " + trainer.getName() + ":");
-        for (FitnessClass fitnessClass : classes) {
-            if (fitnessClass.getTrainer() != null && fitnessClass.getTrainer().getId() == trainer.getId()) {
-                System.out.println("Class Name: " + fitnessClass.getName() +
-                                   ", Day of Week: " + fitnessClass.getDayOfWeek() +
-                                   ", Start Time: " + fitnessClass.getStartTime() +
-                                   ", End Time: " + fitnessClass.getEndTime() +
-                                   ", Room: " + (fitnessClass.getRoom() != null ? fitnessClass.getRoom().getRoomNumber() : "None"));
+        for (FitnessClass fitnessClass : trainer.getClasses()) {
+            System.out.println("Class Name: " + fitnessClass.getName() +
+                                ", Day of Week: " + fitnessClass.getDayOfWeek() +
+                                ", Start Time: " + fitnessClass.getStartTime() +
+                                ", End Time: " + fitnessClass.getEndTime() +
+                                ", Room: " + (fitnessClass.getRoom() != null ? fitnessClass.getRoom().getRoomNumber() : "None"));
             }
-        }
-    }
+     }
+    
 
     
     //Function that allows trainers to search for members by name and view their current goal and last metric
